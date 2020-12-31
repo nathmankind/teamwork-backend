@@ -4,6 +4,7 @@ const cors = require("cors");
 const app = express();
 const morgan = require("morgan");
 const userRoutes = require("./routes/user");
+const articleRoutes = require("./routes/article");
 // const adminRoutes = require("./routes/admin");
 
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -13,7 +14,8 @@ app.use(morgan("tiny"));
 app.use(cors());
 
 app.use(morgan("tiny"));
-app.use("/api/v1", userRoutes);
+app.use("/api/v1/auth", userRoutes);
+app.use("/api/v1", articleRoutes);
 
 app.get("/", (req, res) => {
   return res.json({
