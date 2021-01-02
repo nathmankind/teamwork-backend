@@ -1,5 +1,3 @@
-// CRUD for articles
-
 const moment = require("moment");
 const db = require("../db");
 const { isEmpty, empty } = require("../helpers/validation");
@@ -69,18 +67,73 @@ const getAllArticles = async (req, res) => {
   }
 };
 
-// /**
-//  * Update An article
-//  * @param {object} req
-//  * @param {object} res
-//  * @returns {object} updated article
-//  */
+/**
+ * Update An article
+ * @param {object} req
+ * @param {object} res
+ * @returns {object} updated article
+ */
 
-// const { id } = req.params;
+const updateArticles = async (req, res) => {
+  const { id } = req.params;
+  const { user_id } = req.user;
+  const { article, is_flagged } = req.body;
 
-// const { user_id } = req.user;
-// const updateArticles = async (req, res) => {
-//   const updateArticleQuery;
-// };
+  const findArticleQuery = `SELECT * FROM articles WHERE id=$1`;
+  const updateArticle = `UPDATE articles SET article=$1, is_flagged=$2 WHERE id=$3 RETURNING *`;
+  try {
+    const { rows } = await db.query(findArticleQuery, [id]);
+    const dbResponse = rows[0];
 
-module.exports = { createArticle, getAllArticles };
+    if (!dbResponse) {
+      errorMessage.error = "Article Cannot be found";
+      return res.status(status.notfound).send(errorMessage);
+    }
+    if (user_id !== dbResponse.user_id) {
+      errorMessage.error = "Not authorized to edit this article";
+      return res.status(status.unauthorized).send(errorMessage);
+    }
+    const values = [article, is_flagged, id];
+    const response = await db.query(updateArticle, values);
+    const dbResult = response.rows[0];
+    successMessage.data = dbResult;
+    return res.status(status.success).send(successMessage);
+  } catch (error) {
+    errorMessage.error = "Operation was not successful";
+    return res.status(status.error).send(errorMessage);
+  }
+};
+
+/**
+ * Delete An Aricle
+ * @param {object} req
+ * @param {object} res
+ * @returns {void} return response article deleted
+ */
+
+const deleteArticle = async (req, res) => {
+  const { id } = req.params;
+  const { user_id } = req.user;
+  const deleteArticleQuery = `DELETE FROM articles WHERE id=$1 AND user_id = $2 returning *`;
+  try {
+    const values = [id, user_id];
+    const { rows } = await db.query(deleteArticleQuery, values);
+    const dbResponse = rows[0];
+    if (!dbResponse) {
+      errorMessage.error = "No article found";
+      return res.status(status.notfound).send(errorMessage);
+    }
+    successMessage.data = {};
+    successMessage.data.message = "Article Deleted Sucessfully";
+    return res.send(status.success).send(successMessage);
+  } catch (error) {
+    return res.status(status.error).send(error);
+  }
+};
+
+module.exports = {
+  createArticle,
+  getAllArticles,
+  updateArticles,
+  deleteArticle,
+};

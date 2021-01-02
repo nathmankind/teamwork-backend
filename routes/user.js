@@ -1,9 +1,12 @@
 const express = require("express");
 const router = express.Router();
+const db = require("../app/db");
 const { createUser, signinUser } = require("../app/controllers/user");
+const verifyToken = require("../app/middleware/verifyAuth");
 
 //get all users
-// router.get("/", async function (req, res, next) {
+// router.get("/users", verifyToken, async function (req, res, next) {
+//   console.log(req.user);
 //   try {
 //     const results = await db.query("SELECT * FROM users");
 //     return res.json(results.rows);
@@ -23,7 +26,7 @@ const { createUser, signinUser } = require("../app/controllers/user");
 //   }
 // });
 
-router.post("/signup", createUser);
-router.post("/login", signinUser);
+router.post("/auth/signup", createUser);
+router.post("/auth/login", signinUser);
 
 module.exports = router;

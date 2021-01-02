@@ -37,4 +37,4 @@ const verifyToken = async (req, res, next) => {
   }
 };
 
-export default verifyToken;
+module.exports = verifyToken;
