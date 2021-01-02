@@ -49,6 +49,45 @@ const createArticleTable = () => {
     });
 };
 
+const createGifTable = () => {
+  const createGifQuery = `CREATE TABLE IF NOT EXISTS gifs(
+    id SERIAL PRIMARY KEY,
+    user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+    gif VARCHAR(100) NOT NULL,
+    is_flagged BOOL DEFAULT(false),
+    created_on DATE NOT NULL
+  )`;
+  db.query(createGifQuery)
+    .then((res) => {
+      console.log(res);
+      db.end();
+    })
+    .catch((err) => {
+      console.log(err);
+      db.end();
+    });
+};
+
+const createGifCommentTable = () => {
+  const createGifCommentQuery = `CREATE TABLE IF NOT EXISTS gifcomment(
+    id SERIAL PRIMARY KEY,
+    user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+    gif_id INTEGER REFERENCES gifs(id) ON DELETE CASCADE,
+    comment TEXT NOT NULL,
+    is_flagged BOOL DEFAULT(false),
+    created_on DATE NOT NULL
+  )`;
+  db.query(createGifCommentQuery)
+    .then((res) => {
+      console.log(err);
+      db.end();
+    })
+    .catch((err) => {
+      console.log(err);
+      db.end();
+    });
+};
+
 const createCommentsTable = () => {
   const createCommentQuery = `CREATE TABLE IF NOT EXISTS comments(
     id SERIAL PRIMARY KEY,

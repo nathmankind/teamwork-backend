@@ -5,6 +5,7 @@ const app = express();
 const morgan = require("morgan");
 const userRoutes = require("./routes/user");
 const articleRoutes = require("./routes/article");
+const gifRoutes = require("./routes/gif");
 
 app.use(bodyParser.urlencoded({ extended: true }));
 
@@ -15,6 +16,7 @@ app.use(cors());
 app.use(morgan("tiny"));
 app.use("/api/v1", userRoutes);
 app.use("/api/v1", articleRoutes);
+app.use("/api/v1", gifRoutes);
 
 app.get("/", (req, res) => {
   return res.json({
