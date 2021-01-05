@@ -1,1 +1,1 @@
-//CRUD for comment
+//CRUD for article comment
