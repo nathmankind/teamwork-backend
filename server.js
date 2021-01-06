@@ -6,6 +6,8 @@ const morgan = require("morgan");
 const userRoutes = require("./routes/user");
 const articleRoutes = require("./routes/article");
 const gifRoutes = require("./routes/gif");
+const articleCommentRoutes = require("./routes/article-comments");
+const gifCommentRoutes = require("./routes/gif-comments");
 
 app.use(bodyParser.urlencoded({ extended: true }));
 
@@ -17,6 +19,8 @@ app.use(morgan("tiny"));
 app.use("/api/v1", userRoutes);
 app.use("/api/v1", articleRoutes);
 app.use("/api/v1", gifRoutes);
+app.use("/api/v1", articleCommentRoutes);
+app.use("/api/v1", gifCommentRoutes);
 
 app.get("/", (req, res) => {
   return res.json({

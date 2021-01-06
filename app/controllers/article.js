@@ -68,6 +68,32 @@ const getAllArticles = async (req, res) => {
 };
 
 /**
+ * Get One Article
+ * @param {object} req
+ * @param {object} res
+ * @returns {object} array containing one gif
+ */
+
+const getOneArticle = async (req, res) => {
+  const { id } = req.params;
+
+  const findOneArticleQuery = `SELECT * FROM articles WHERE id=$1`;
+  try {
+    const { rows } = await db.query(findOneArticleQuery, [id]);
+    const dbResponse = rows;
+    if (dbResponse[0] === undefined) {
+      errorMessage.error = "No article available";
+      return res.status(status.notfound).send(errorMessage);
+    }
+    successMessage.data = dbResponse;
+    return res.status(status.success).send(successMessage);
+  } catch (error) {
+    rrorMessage.error = "An error Occured";
+    return res.status(status.error).send(errorMessage);
+  }
+};
+
+/**
  * Update An article
  * @param {object} req
  * @param {object} res
@@ -136,4 +162,5 @@ module.exports = {
   getAllArticles,
   updateArticles,
   deleteArticle,
+  getOneArticle,
 };

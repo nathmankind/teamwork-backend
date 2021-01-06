@@ -68,8 +68,41 @@ const createGifTable = () => {
     });
 };
 
+
+const createFeedTable = () => {
+  const createFeedQuery = `CREATE TABLE sample_feeds(
+    id SERIAL PRIMARY KEY,
+    user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+    feed_content TEXT DEFAULT(null),
+    is_flagged BOOL DEFAULT(false),
+    created_on DATE NOT NULL
+  )`
+  db.query(createFeedQuery)
+    .then((res) => {
+      console.log(res);
+      db.end();
+    })
+    .catch((err) => {
+      console.log(err);
+      db.end();
+    });
+}
+
+
+/**
+ * Query to combine article and gif table
+ */
+// INSERT INTO sample_feeds(user_id, feed_content,is_flagged, created_on)
+// SELECT a.user_id, a.article, a.is_flagged, a.created_on 
+// FROM articles a
+// UNION ALL
+// SELECT g.user_id, g.gif, g.is_flagged, g.created_on 
+// FROM gifs g;
+
+
+
 const createGifCommentTable = () => {
-  const createGifCommentQuery = `CREATE TABLE IF NOT EXISTS gifcomment(
+  const createGifCommentQuery = `CREATE TABLE IF NOT EXISTS gifcomments(
     id SERIAL PRIMARY KEY,
     user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
     gif_id INTEGER REFERENCES gifs(id) ON DELETE CASCADE,
@@ -87,6 +120,7 @@ const createGifCommentTable = () => {
       db.end();
     });
 };
+
 
 const createCommentsTable = () => {
   const createCommentQuery = `CREATE TABLE IF NOT EXISTS comments(

@@ -2,7 +2,12 @@ const moment = require("moment");
 const cloudinary = require("cloudinary").v2;
 const db = require("../db");
 const { isEmpty } = require("../helpers/validation");
+const fileUpload = require("express-fileupload");
+const express = require("express");
+const app = express();
 const { successMessage, errorMessage, status } = require("../helpers/status");
+
+app.use(fileUpload());
 
 /**
  * Create A Gif
@@ -13,7 +18,6 @@ const { successMessage, errorMessage, status } = require("../helpers/status");
 
 const createGif = async (req, res) => {
   const { user_id } = req.user;
-  const { gif } = req.body;
   const createdAt = moment(new Date());
 
   cloudinary.config({
@@ -21,23 +25,22 @@ const createGif = async (req, res) => {
     api_key: process.env.API_KEY,
     api_secret: process.env.API_SECRET,
   });
+  // res.send(req.file);
 
-  // upload gif here
   await cloudinary.uploader
-    .upload(gif)
+    .upload(req.file.path)
     .then(async (result) => {
       const gif_url = result.secure_url;
       const createGifQuery = `INSERT INTO gifs(
-            user_id, gif, created_on
-        ) VALUES ( $1, $2, $3)
-        returning *`;
+              user_id, gif, created_on
+          ) VALUES ( $1, $2, $3)
+          returning *`;
       const values = [user_id, gif_url, createdAt];
       if (isEmpty(gif_url)) {
         errorMessage.error = "Upload a gif image";
         return res.status(status.bad).send(errorMessage);
       }
       try {
-        console.log(values);
         const { rows } = await db.query(createGifQuery, values);
         const dbResponse = rows[0];
         successMessage.data = dbResponse;

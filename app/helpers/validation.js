@@ -86,7 +86,7 @@ const generateToken = (email, id, is_admin, firstName, lastName) => {
       is_admin,
     },
     process.env.SECRET_KEY,
-    { expiresIn: 60 * 60 }
+    { expiresIn: 600 * 60 }
   );
   return token;
 };
