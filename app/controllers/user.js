@@ -159,4 +159,32 @@ const signinUser = async (req, res) => {
   }
 };
 
-module.exports = { createUser, signinUser };
+/**
+ * Get All Users
+ * @param {object} req
+ * @param {object} res
+ * @returns {object} array of users
+ */
+
+const getAllUsers = async (req, res) => {
+  const getAllUsersQuery = `SELECT * FROM users`;
+
+  try {
+    const { rows } = await db.query(getAllUsersQuery);
+    const dbResponse = rows;
+    if (dbResponse[0] === undefined) {
+      errorMessage.message = "No users available";
+      return res.status(status.notfound).send(errorMessage);
+    }
+    dbResponse.map((data) => {
+      delete data.password;
+    });
+    successMessage.data = dbResponse;
+    return res.status(status.success).send(successMessage);
+  } catch (error) {
+    errorMessage.message = "An error Occured";
+    return res.status(status.error).send(errorMessage);
+  }
+};
+
+module.exports = { createUser, signinUser, getAllUsers };
