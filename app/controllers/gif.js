@@ -18,6 +18,7 @@ app.use(fileUpload());
 
 const createGif = async (req, res) => {
   const { user_id } = req.user;
+  const {title} = req.body
   const createdAt = moment(new Date());
 
   cloudinary.config({
@@ -32,10 +33,10 @@ const createGif = async (req, res) => {
     .then(async (result) => {
       const gif_url = result.secure_url;
       const createGifQuery = `INSERT INTO gifs(
-              user_id, gif, created_on
+              user_id,title, gif
           ) VALUES ( $1, $2, $3)
           returning *`;
-      const values = [user_id, gif_url, createdAt];
+      const values = [user_id,title, gif_url];
       if (isEmpty(gif_url)) {
         errorMessage.error = "Upload a gif image";
         return res.status(status.bad).send(errorMessage);

@@ -5,8 +5,10 @@ db.on("connect", () => {
 });
 
 const createUserTable = () => {
-  const createUserQuery = `CREATE TABLE IF NOT EXISTS users(
-      id SERIAL PRIMARY KEY,
+  const createUserQuery = `
+  CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+  CREATE TABLE IF NOT EXISTS users(
+      id UUID PRIMARY KEY NOT NULL UNIQUE DEFAULT uuid_generate_v4(),
       email VARCHAR(128) UNIQUE NOT NULL,
       password VARCHAR(100) NOT NULL,
       first_name VARCHAR(100) NOT NULL,
@@ -68,16 +70,33 @@ const createGifTable = () => {
     });
 };
 
+const createPostTableQuery = `
+    CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+    CREATE TABLE IF NOT EXISTS
+    posts(
+        id UUID PRIMARY KEY NOT NULL UNIQUE DEFAULT uuid_generate_v4(),
+        user_id UUID NOT NULL,
+        title VARCHAR NOT NULL,
+        article VARCHAR NULL,
+        gif VARCHAR NULL,
+        createdat TIMESTAMP DEFAULT NOW(),
+        FOREIGN KEY (user_id) REFERENCES "users" (id) ON DELETE CASCADE
+    )
+`;
 
-const createFeedTable = () => {
-  const createFeedQuery = `CREATE TABLE sample_feeds(
-    id SERIAL PRIMARY KEY,
-    user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
-    feed_content TEXT DEFAULT(null),
-    is_flagged BOOL DEFAULT(false),
-    created_on DATE NOT NULL
-  )`
-  db.query(createFeedQuery)
+const createPostTable = () => {
+  const createPostQuery = `CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+  CREATE TABLE IF NOT EXISTS
+  posts(
+      id UUID PRIMARY KEY NOT NULL UNIQUE DEFAULT uuid_generate_v4(),
+      user_id UUID NOT NULL,
+      title VARCHAR NOT NULL,
+      article VARCHAR NULL,
+      gif VARCHAR NULL,
+      createdat TIMESTAMP DEFAULT NOW(),
+      FOREIGN KEY (user_id) REFERENCES "users" (id) ON DELETE CASCADE
+  )`;
+  db.query(createPostQuery)
     .then((res) => {
       console.log(res);
       db.end();
@@ -86,20 +105,41 @@ const createFeedTable = () => {
       console.log(err);
       db.end();
     });
-}
+};
 
+const createCommentTable = () => {
+  const createCommentQuery = `CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+  CREATE TABLE IF NOT EXISTS
+  comments(
+      id UUID PRIMARY KEY NOT NULL UNIQUE DEFAULT uuid_generate_v4(),
+      post_id UUID NOT NULL,
+      user_id UUID NOT NULL,
+      comment VARCHAR NOT NULL,
+      createdat TIMESTAMP DEFAULT NOW(),
+      FOREIGN KEY (post_id) REFERENCES "posts" (id) ON DELETE CASCADE,
+      FOREIGN KEY (user_id) REFERENCES "users" (id) ON DELETE CASCADE
+  )`;
+  db.query(createCommentQuery)
+    .then((res) => {
+      console.log(res);
+      db.end();
+    })
+    .catch((err) => {
+      console.log(err);
+      db.end();
+    });
+};
 
 /**
+ * \dt
  * Query to combine article and gif table
  */
 // INSERT INTO sample_feeds(user_id, feed_content,is_flagged, created_on)
-// SELECT a.user_id, a.article, a.is_flagged, a.created_on 
+// SELECT a.user_id, a.article, a.is_flagged, a.created_on
 // FROM articles a
 // UNION ALL
-// SELECT g.user_id, g.gif, g.is_flagged, g.created_on 
+// SELECT g.user_id, g.gif, g.is_flagged, g.created_on
 // FROM gifs g;
-
-
 
 const createGifCommentTable = () => {
   const createGifCommentQuery = `CREATE TABLE IF NOT EXISTS gifcomments(
@@ -120,7 +160,6 @@ const createGifCommentTable = () => {
       db.end();
     });
 };
-
 
 const createCommentsTable = () => {
   const createCommentQuery = `CREATE TABLE IF NOT EXISTS comments(
@@ -143,24 +182,8 @@ const createCommentsTable = () => {
     });
 };
 
-const dropUserTable = () => {
-  const usersDropQuery = "DROP TABLE IF EXISTS users";
-  db.query(usersDropQuery)
-    .then((res) => {
-      console.log(res);
-      db.end();
-    })
-    .catch((err) => {
-      console.log(err);
-      db.end();
-    });
-};
-
 const createAllTables = () => {
   createUserTable();
-};
-const dropAllTables = () => {
-  dropUserTable();
 };
 
 db.on("remove", () => {

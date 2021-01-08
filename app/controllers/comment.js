@@ -43,6 +43,42 @@ const createArticleComment = async (req, res) => {
     return res.status(status.error).send(errorMessage);
   }
 };
+
+//////
+const createPostComment = async (req, res) => {
+  const { user_id } = req.user;
+  const { post_id } = req.params;
+  const { comment } = req.body;
+
+  const createdAt = moment(new Date());
+
+  if (isEmpty(comment)) {
+    errorMessage.error = "Enter a comment";
+    return res.status(status.bad).send(errorMessage);
+  }
+
+  const createCommentQuery = `INSERT INTO comments(
+        post_id, user_id, comment
+    ) 
+    VALUES ($1, $2, $3) 
+    returning *`;
+  const values = [post_id, user_id, comment];
+  try {
+    const { rows } = await db.query(createCommentQuery, values);
+    const dbResponse = rows[0];
+    successMessage.data = dbResponse;
+    return res.status(status.created).send(successMessage);
+  } catch (error) {
+    if (error.routine === "_bt_check_unique") {
+      errorMessage.error = "comment already exists";
+      return res.status(status.conflict).send(errorMessage);
+    }
+    errorMessage.error = "Unable to create comment";
+    return res.status(status.error).send(errorMessage);
+  }
+};
+
+//////
 /**
  * Get All Comments
  * @param {object} req
@@ -165,4 +201,5 @@ module.exports = {
   getOneArticleComments,
   updateComment,
   deleteComment,
+  createPostComment,
 };
