@@ -27,7 +27,7 @@ const createUser = async (req, res) => {
     department,
     address,
   } = req.body;
-
+  const { is_admin } = req.user;
   const created_on = moment(new Date());
 
   if (
@@ -51,6 +51,10 @@ const createUser = async (req, res) => {
     errorMessage.error = "Password must be more than eight (8) characters";
     return res.status(status.bad).send(errorMessage);
   }
+  if (is_admin === false) {
+    errorMessage.error = "Not authorized to create a user";
+    return res.status(status.unauthorized).send(errorMessage);
+  }
 
   const hashedPassword = hashPassword(password);
   const createUserQuery = `INSERT INTO
@@ -63,9 +67,10 @@ const createUser = async (req, res) => {
         job_role,
         department,
         address,
+        is_admin,
         created_on
       )
-      VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9 )
+      VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10 )
       returning *`;
   const values = [
     email,
@@ -76,6 +81,7 @@ const createUser = async (req, res) => {
     job_role,
     department,
     address,
+    is_admin,
     created_on,
   ];
 
@@ -93,7 +99,6 @@ const createUser = async (req, res) => {
     );
     successMessage.data = dbResponse;
     successMessage.data.token = token;
-    console.log(rows[0]);
     return res.status(status.created).send(successMessage);
   } catch (error) {
     //check for duplicate values and throw an error if found
@@ -101,7 +106,6 @@ const createUser = async (req, res) => {
       errorMessage.error = "User with that EMAIL already exist";
       return res.status(status.conflict).send(errorMessage);
     }
-    console.log("got to catching error");
     errorMessage.error = "Operation was not successful";
     return res.status(status.error).send(errorMessage);
   }

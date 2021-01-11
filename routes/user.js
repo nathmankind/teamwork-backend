@@ -9,29 +9,7 @@ const {
 const verifyToken = require("../app/middleware/verifyAuth");
 const { getAllArticles } = require("../app/controllers/article");
 
-//get all users
-// router.get("/users", verifyToken, async function (req, res, next) {
-//   console.log(req.user);
-//   try {
-//     const results = await db.query("SELECT * FROM users");
-//     return res.json(results.rows);
-//   } catch (error) {
-//     return next(error);
-//   }
-// });
-// router.post("/", async (req, res, next) => {
-//   try {
-//     const result = await db.query(
-//       "INSERT INTO users (email, password, userType) VALUES ($1,$2,$3) RETURNING *",
-//       [req.body.email, req.body.password, req.body.userType]
-//     );
-//     return res.json(result.rows[0]);
-//   } catch (error) {
-//     return next(error);
-//   }
-// });
-
-router.post("/auth/signup", createUser);
+router.post("/auth/signup", verifyToken, createUser);
 router.post("/auth/login", signinUser);
 router.get("/auth/users", getAllUsers);
 

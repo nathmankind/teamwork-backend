@@ -105,7 +105,7 @@ const createGifPost = async (req, res) => {
  */
 
 const getAllPosts = async (req, res) => {
-  const getAllArticlesQuery = `SELECT * FROM posts ORDER BY id DESC `;
+  const getAllArticlesQuery = `SELECT * FROM posts ORDER BY createdat DESC `;
 
   try {
     const { rows } = await db.query(getAllArticlesQuery);
