@@ -32,57 +32,57 @@ const createUserTable = () => {
 };
 
 //    \
-const createArticleTable = () => {
-  const createArticleQuery = `CREATE TABLE IF NOT EXISTS articles(
-    id SERIAL PRIMARY KEY,
-    user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
-    article TEXT NOT NULL,
-    is_flagged BOOL DEFAULT(false),
-    created_on DATE NOT NULL
-  )`;
-  db.query(createArticleQuery)
-    .then((res) => {
-      console.log(res);
-      db.end();
-    })
-    .catch((err) => {
-      console.log(err);
-      db.end();
-    });
-};
+// const createArticleTable = () => {
+//   const createArticleQuery = `CREATE TABLE IF NOT EXISTS articles(
+//     id SERIAL PRIMARY KEY,
+//     user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+//     article TEXT NOT NULL,
+//     is_flagged BOOL DEFAULT(false),
+//     created_on DATE NOT NULL
+//   )`;
+//   db.query(createArticleQuery)
+//     .then((res) => {
+//       console.log(res);
+//       db.end();
+//     })
+//     .catch((err) => {
+//       console.log(err);
+//       db.end();
+//     });
+// };
 
-const createGifTable = () => {
-  const createGifQuery = `CREATE TABLE IF NOT EXISTS gifs(
-    id SERIAL PRIMARY KEY,
-    user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
-    gif VARCHAR(100) NOT NULL,
-    is_flagged BOOL DEFAULT(false),
-    created_on DATE NOT NULL
-  )`;
-  db.query(createGifQuery)
-    .then((res) => {
-      console.log(res);
-      db.end();
-    })
-    .catch((err) => {
-      console.log(err);
-      db.end();
-    });
-};
+// const createGifTable = () => {
+//   const createGifQuery = `CREATE TABLE IF NOT EXISTS gifs(
+//     id SERIAL PRIMARY KEY,
+//     user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+//     gif VARCHAR(100) NOT NULL,
+//     is_flagged BOOL DEFAULT(false),
+//     created_on DATE NOT NULL
+//   )`;
+//   db.query(createGifQuery)
+//     .then((res) => {
+//       console.log(res);
+//       db.end();
+//     })
+//     .catch((err) => {
+//       console.log(err);
+//       db.end();
+//     });
+// };
 
-const createPostTableQuery = `
-    CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
-    CREATE TABLE IF NOT EXISTS
-    posts(
-        id UUID PRIMARY KEY NOT NULL UNIQUE DEFAULT uuid_generate_v4(),
-        user_id UUID NOT NULL,
-        title VARCHAR NOT NULL,
-        article VARCHAR NULL,
-        gif VARCHAR NULL,
-        createdat TIMESTAMP DEFAULT NOW(),
-        FOREIGN KEY (user_id) REFERENCES "users" (id) ON DELETE CASCADE
-    )
-`;
+// const createPostTableQuery = `
+//     CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+//     CREATE TABLE IF NOT EXISTS
+//     posts(
+//         id UUID PRIMARY KEY NOT NULL UNIQUE DEFAULT uuid_generate_v4(),
+//         user_id UUID NOT NULL,
+//         title VARCHAR NOT NULL,
+//         article VARCHAR NULL,
+//         gif VARCHAR NULL,
+//         createdat TIMESTAMP DEFAULT NOW(),
+//         FOREIGN KEY (user_id) REFERENCES "users" (id) ON DELETE CASCADE
+//     )
+// `;
 
 const createPostTable = () => {
   const createPostQuery = `CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
@@ -130,57 +130,46 @@ const createCommentTable = () => {
     });
 };
 
-/**
- * \dt
- * Query to combine article and gif table
- */
-// INSERT INTO sample_feeds(user_id, feed_content,is_flagged, created_on)
-// SELECT a.user_id, a.article, a.is_flagged, a.created_on
-// FROM articles a
-// UNION ALL
-// SELECT g.user_id, g.gif, g.is_flagged, g.created_on
-// FROM gifs g;
+// const createGifCommentTable = () => {
+//   const createGifCommentQuery = `CREATE TABLE IF NOT EXISTS gifcomments(
+//     id SERIAL PRIMARY KEY,
+//     user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+//     gif_id INTEGER REFERENCES gifs(id) ON DELETE CASCADE,
+//     comment TEXT NOT NULL,
+//     is_flagged BOOL DEFAULT(false),
+//     created_on DATE NOT NULL
+//   )`;
+//   db.query(createGifCommentQuery)
+//     .then((res) => {
+//       console.log(err);
+//       db.end();
+//     })
+//     .catch((err) => {
+//       console.log(err);
+//       db.end();
+//     });
+// };
 
-const createGifCommentTable = () => {
-  const createGifCommentQuery = `CREATE TABLE IF NOT EXISTS gifcomments(
-    id SERIAL PRIMARY KEY,
-    user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
-    gif_id INTEGER REFERENCES gifs(id) ON DELETE CASCADE,
-    comment TEXT NOT NULL,
-    is_flagged BOOL DEFAULT(false),
-    created_on DATE NOT NULL
-  )`;
-  db.query(createGifCommentQuery)
-    .then((res) => {
-      console.log(err);
-      db.end();
-    })
-    .catch((err) => {
-      console.log(err);
-      db.end();
-    });
-};
+// const createCommentsTable = () => {
+//   const createCommentQuery = `CREATE TABLE IF NOT EXISTS comments(
+//     id SERIAL PRIMARY KEY,
+//     user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+//     article_id INTEGER REFERENCES articles(id) ON DELETE CASCADE,
+//     comment TEXT NOT NULL,
+//     is_flagged BOOL DEFAULT(false),
+//     created_on DATE NOT NULL
+//   )`;
 
-const createCommentsTable = () => {
-  const createCommentQuery = `CREATE TABLE IF NOT EXISTS comments(
-    id SERIAL PRIMARY KEY,
-    user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
-    article_id INTEGER REFERENCES articles(id) ON DELETE CASCADE,
-    comment TEXT NOT NULL,
-    is_flagged BOOL DEFAULT(false),
-    created_on DATE NOT NULL
-  )`;
-
-  db.query(createCommentQuery)
-    .then((res) => {
-      console.log(err);
-      db.end();
-    })
-    .catch((err) => {
-      console.log(err);
-      db.end();
-    });
-};
+//   db.query(createCommentQuery)
+//     .then((res) => {
+//       console.log(err);
+//       db.end();
+//     })
+//     .catch((err) => {
+//       console.log(err);
+//       db.end();
+//     });
+// };
 
 const createAllTables = () => {
   createUserTable();

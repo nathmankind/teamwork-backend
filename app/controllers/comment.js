@@ -5,46 +5,12 @@ const { isEmpty } = require("../helpers/validation");
 const { successMessage, errorMessage, status } = require("../helpers/status");
 
 /**
- * Create Comment for an article
+ * Create Comment for a post
  * @param {object} req
  * @param {object} res
  * @returns {object} object reflection
  */
 
-const createArticleComment = async (req, res) => {
-  const { user_id } = req.user;
-  const { article_id } = req.body;
-  const { comment } = req.body;
-
-  const createdAt = moment(new Date());
-
-  if (isEmpty(comment)) {
-    errorMessage.error = "Enter a comment";
-    return res.status(status.bad).send(errorMessage);
-  }
-
-  const createCommentQuery = `INSERT INTO comments(
-        user_id, article_id, comment, created_on
-    ) 
-    VALUES ($1, $2, $3, $4) 
-    returning *`;
-  const values = [user_id, article_id, comment, createdAt];
-  try {
-    const { rows } = await db.query(createCommentQuery, values);
-    const dbResponse = rows[0];
-    successMessage.data = dbResponse;
-    return res.status(status.created).send(successMessage);
-  } catch (error) {
-    if (error.routine === "_bt_check_unique") {
-      errorMessage.error = "Article already exists";
-      return res.status(status.conflict).send(errorMessage);
-    }
-    errorMessage.error = "Unable to create comment";
-    return res.status(status.error).send(errorMessage);
-  }
-};
-
-//////
 const createPostComment = async (req, res) => {
   const { user_id } = req.user;
   const { post_id } = req.params;
@@ -78,7 +44,6 @@ const createPostComment = async (req, res) => {
   }
 };
 
-//////
 /**
  * Get All Comments
  * @param {object} req
@@ -92,10 +57,7 @@ const getAllComments = async (req, res) => {
   try {
     const { rows } = await db.query(getAllCommentsQuery);
     const dbResponse = rows;
-    // if (dbResponse[0] === undefined) {
-    //   errorMessage.error = "No comments available";
-    //   return res.status(status.notfound).send(errorMessage);
-    // }
+
     successMessage.data = dbResponse;
     return res.status(status.success).send(successMessage);
   } catch (error) {
@@ -105,24 +67,20 @@ const getAllComments = async (req, res) => {
 };
 
 /**
- * Get One Comment
+ * Get One Post Comment
  * @param {object} req
  * @param {object} res
- * @returns {object} array of gifs
+ * @returns {object} array of comment per post
  */
 
-const getOneArticleComments = async (req, res) => {
-  // const { id } = req.params;
-  const { article_id } = req.params;
+const getOnePostComments = async (req, res) => {
+  const { post_id } = req.params;
 
-  const findOneGifQuery = `SELECT * FROM comments WHERE article_id=$1`;
+  const findOneCommentQuery = `SELECT * FROM comments WHERE post_id=$1`;
   try {
-    const { rows } = await db.query(findOneGifQuery, [article_id]);
+    const { rows } = await db.query(findOneCommentQuery, [post_id]);
     const dbResponse = rows;
-    if (dbResponse[0] === undefined) {
-      errorMessage.error = "No comments available";
-      return res.status(status.notfound).send(errorMessage);
-    }
+
     successMessage.data = dbResponse;
     return res.status(status.success).send(successMessage);
   } catch (error) {
@@ -149,10 +107,7 @@ const updateComment = async (req, res) => {
     const { rows } = await db.query(findCommentQuery, [id]);
     const dbResponse = rows[0];
 
-    if (!dbResponse) {
-      errorMessage.error = "comment cannot be found";
-      return res.status(status.notfound).send(errorMessage);
-    }
+    //
     if (user_id !== dbResponse.user_id) {
       errorMessage.error = "Not authorized to edit this comment";
       return res.status(status.unauthorized).send(errorMessage);
@@ -196,10 +151,9 @@ const deleteComment = async (req, res) => {
 };
 
 module.exports = {
-  createArticleComment,
   getAllComments,
-  getOneArticleComments,
   updateComment,
   deleteComment,
   createPostComment,
+  getOnePostComments,
 };
