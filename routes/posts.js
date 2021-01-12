@@ -14,8 +14,8 @@ const {
 
 router.post("/posts", verifyToken, createArticle);
 router.post("/posts/gif", verifyToken, upload.single("gif"), createGifPost);
-router.get("/posts", verifyToken, getAllPosts);
-router.get("/posts/:id", verifyToken, getOnePost);
+router.get("/posts", getAllPosts);
+router.get("/posts/:id", getOnePost);
 router.put("/posts/:id", verifyToken, upload.single("gif"), updatePost);
 router.delete("/posts/:id", verifyToken, deletePost);
 

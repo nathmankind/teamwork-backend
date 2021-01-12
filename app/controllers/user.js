@@ -27,7 +27,7 @@ const createUser = async (req, res) => {
     department,
     address,
   } = req.body;
-  const { is_admin } = req.user;
+  const is_admin = false;
   const created_on = moment(new Date());
 
   if (
@@ -51,10 +51,10 @@ const createUser = async (req, res) => {
     errorMessage.error = "Password must be more than eight (8) characters";
     return res.status(status.bad).send(errorMessage);
   }
-  if (is_admin === false) {
-    errorMessage.error = "Not authorized to create a user";
-    return res.status(status.unauthorized).send(errorMessage);
-  }
+  // if (is_admin === false) {
+  //   errorMessage.error = "Not authorized to create a user";
+  //   return res.status(status.unauthorized).send(errorMessage);
+  // }
 
   const hashedPassword = hashPassword(password);
   const createUserQuery = `INSERT INTO
