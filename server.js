@@ -3,9 +3,9 @@ const bodyParser = require("body-parser");
 const cors = require("cors");
 const app = express();
 const morgan = require("morgan");
-const userRoutes = require("./routes/user");
-const postsRoute = require("./routes/posts");
-const commentsRoute = require("./routes/comments");
+const userRoutes = require("./app/routes/user");
+const postsRoute = require("./app/routes/posts");
+const commentsRoute = require("./app/routes/comments");
 
 app.use(bodyParser.urlencoded({ extended: true }));
 
