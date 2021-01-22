@@ -4,10 +4,6 @@ const cors = require("cors");
 const app = express();
 const morgan = require("morgan");
 const userRoutes = require("./routes/user");
-// const articleRoutes = require("./routes/article");
-// const gifRoutes = require("./routes/gif");
-// const articleCommentRoutes = require("./routes/article-comments");
-// const gifCommentRoutes = require("./routes/gif-comments");
 const postsRoute = require("./routes/posts");
 const commentsRoute = require("./routes/comments");
 
@@ -21,10 +17,6 @@ app.use(morgan("tiny"));
 app.use("/api/v1", userRoutes);
 app.use("/api/v1", postsRoute);
 app.use("/api/v1", commentsRoute);
-// app.use("/api/v1", articleRoutes);
-// app.use("/api/v1", gifRoutes);
-// app.use("/api/v1", articleCommentRoutes);
-// app.use("/api/v1", gifCommentRoutes);
 
 app.get("/", (req, res) => {
   return res.json({

@@ -99,25 +99,34 @@ const getOnePostComments = async (req, res) => {
 const updateComment = async (req, res) => {
   const { id } = req.params;
   const { user_id } = req.user;
-  const { comment, is_flagged } = req.body;
+  const { comment } = req.body;
 
   const findCommentQuery = `SELECT * FROM comments WHERE id=$1`;
-  const updateComment = `UPDATE comments SET comment=$1, is_flagged=$2 WHERE id=$3 RETURNING *`;
+  const updateCommentQuery = `UPDATE comments SET comment=$1 WHERE id=$2 RETURNING *`;
   try {
     const { rows } = await db.query(findCommentQuery, [id]);
     const dbResponse = rows[0];
 
-    //
+    if (!dbResponse) {
+      errorMessage.error = "Comment be found";
+      return res.status(status.notfound).send(errorMessage);
+    }
+    if (dbResponse == []) {
+      successMessage.data = dbResponse;
+      return res.status(status.success).send(successMessage);
+    }
     if (user_id !== dbResponse.user_id) {
       errorMessage.error = "Not authorized to edit this comment";
       return res.status(status.unauthorized).send(errorMessage);
     }
-    const values = [comment, is_flagged, id];
-    const response = await db.query(updateComment, values);
+    const values = [comment, id];
+    const response = await db.query(updateCommentQuery, values);
+    console.log(response);
     const dbResult = response.rows[0];
     successMessage.data = dbResult;
     return res.status(status.success).send(successMessage);
   } catch (error) {
+    console.log(error);
     errorMessage.error = "Operation was not successful";
     return res.status(status.error).send(errorMessage);
   }

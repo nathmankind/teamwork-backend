@@ -78,8 +78,7 @@ const createCommentTable = () => {
 };
 
 const createAllTables = () => {
-  createUserTable();
-  createPostTable(), createCommentTable();
+  createUserTable(), createPostTable(), createCommentTable();
 };
 
 db.on("remove", () => {
@@ -87,6 +86,6 @@ db.on("remove", () => {
   process.exit(0);
 });
 
-export { createAllTables };
+module.exports = { createAllTables };
 
 require("make-runnable");

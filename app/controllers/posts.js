@@ -263,8 +263,4 @@ module.exports = {
   updatePost,
   deletePost,
   createGifPost,
-  //   getAllArticles,
-  //   updateArticles,
-  //   deleteArticle,
-  //   getOneArticle,
 };
