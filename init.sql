@@ -24,7 +24,7 @@ IF NOT EXISTS users
       is_admin BOOL DEFAULT
 (false),
       created_on TIMESTAMP DEFAULT NOW
-() )
+() );
 
 
 INSERT INTO users
@@ -36,8 +36,7 @@ CREATE EXTENSION
 IF NOT EXISTS "uuid-ossp";
 
 CREATE TABLE
-IF NOT EXISTS
-  posts
+IF NOT EXISTS posts
 (
       id UUID PRIMARY KEY NOT NULL UNIQUE DEFAULT uuid_generate_v4
 (),
@@ -51,7 +50,7 @@ IF NOT EXISTS
 (user_id) REFERENCES "users"
 (id) ON
 DELETE CASCADE
-  )
+  );
 
 
 CREATE EXTENSION
@@ -75,4 +74,4 @@ DELETE CASCADE,
 REFERENCES "users"
 (id) ON
 DELETE CASCADE
-  )
+  );
