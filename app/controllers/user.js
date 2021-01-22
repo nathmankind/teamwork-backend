@@ -28,7 +28,6 @@ const createUser = async (req, res) => {
     address,
   } = req.body;
   const is_admin = false;
-  const created_on = moment(new Date());
 
   if (
     isEmpty(email) ||
@@ -67,8 +66,7 @@ const createUser = async (req, res) => {
         job_role,
         department,
         address,
-        is_admin,
-        created_on
+        is_admin
       )
       VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10 )
       returning *`;
@@ -82,7 +80,6 @@ const createUser = async (req, res) => {
     department,
     address,
     is_admin,
-    created_on,
   ];
 
   try {
