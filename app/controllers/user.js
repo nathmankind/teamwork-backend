@@ -1,6 +1,6 @@
 const moment = require("moment");
 const db_query = require("../db-helpers/query");
-const db = require("../db");
+const { pool } = require("../db");
 const {
   hashPassword,
   comparePassword,
@@ -83,7 +83,7 @@ const createUser = async (req, res) => {
   ];
 
   try {
-    const { rows } = await db.query(createUserQuery, values);
+    const { rows } = await pool.query(createUserQuery, values);
 
     const dbResponse = rows[0];
     delete dbResponse.password;
@@ -171,7 +171,7 @@ const getAllUsers = async (req, res) => {
   const getAllUsersQuery = `SELECT * FROM users`;
 
   try {
-    const { rows } = await db.query(getAllUsersQuery);
+    const { rows } = await pool.query(getAllUsersQuery);
     const dbResponse = rows;
     if (dbResponse[0] === undefined) {
       errorMessage.message = "No users available";
