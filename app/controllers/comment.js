@@ -1,6 +1,6 @@
 //CRUD for article comment
 const moment = require("moment");
-const db = require("../db");
+const { pool } = require("../db");
 const { isEmpty } = require("../helpers/validation");
 const { successMessage, errorMessage, status } = require("../helpers/status");
 
@@ -30,7 +30,7 @@ const createPostComment = async (req, res) => {
     returning *`;
   const values = [post_id, user_id, comment];
   try {
-    const { rows } = await db.query(createCommentQuery, values);
+    const { rows } = await pool.query(createCommentQuery, values);
     const dbResponse = rows[0];
     successMessage.data = dbResponse;
     return res.status(status.created).send(successMessage);
@@ -55,7 +55,7 @@ const getAllComments = async (req, res) => {
   const getAllCommentsQuery = `SELECT * FROM comments ORDER BY id DESC `;
 
   try {
-    const { rows } = await db.query(getAllCommentsQuery);
+    const { rows } = await pool.query(getAllCommentsQuery);
     const dbResponse = rows;
 
     successMessage.data = dbResponse;
@@ -78,7 +78,7 @@ const getOnePostComments = async (req, res) => {
 
   const findOneCommentQuery = `SELECT * FROM comments WHERE post_id=$1`;
   try {
-    const { rows } = await db.query(findOneCommentQuery, [post_id]);
+    const { rows } = await pool.query(findOneCommentQuery, [post_id]);
     const dbResponse = rows;
 
     successMessage.data = dbResponse;
@@ -104,7 +104,7 @@ const updateComment = async (req, res) => {
   const findCommentQuery = `SELECT * FROM comments WHERE id=$1`;
   const updateCommentQuery = `UPDATE comments SET comment=$1 WHERE id=$2 RETURNING *`;
   try {
-    const { rows } = await db.query(findCommentQuery, [id]);
+    const { rows } = await pool.query(findCommentQuery, [id]);
     const dbResponse = rows[0];
 
     if (!dbResponse) {
@@ -120,7 +120,7 @@ const updateComment = async (req, res) => {
       return res.status(status.unauthorized).send(errorMessage);
     }
     const values = [comment, id];
-    const response = await db.query(updateCommentQuery, values);
+    const response = await pool.query(updateCommentQuery, values);
     console.log(response);
     const dbResult = response.rows[0];
     successMessage.data = dbResult;
@@ -145,7 +145,7 @@ const deleteComment = async (req, res) => {
   const deleteCommentQuery = `DELETE FROM comments WHERE id=$1 AND user_id = $2 returning *`;
   try {
     const values = [id, user_id];
-    const { rows } = await db.query(deleteCommentQuery, values);
+    const { rows } = await pool.query(deleteCommentQuery, values);
     const dbResponse = rows[0];
     if (!dbResponse) {
       errorMessage.error = "No comment found";

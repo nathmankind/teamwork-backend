@@ -1,5 +1,5 @@
 const moment = require("moment");
-const db = require("../db");
+const { pool } = require("../db");
 const { isEmpty, empty } = require("../helpers/validation");
 const cloudinary = require("cloudinary").v2;
 const { successMessage, errorMessage, status } = require("../helpers/status");
@@ -33,7 +33,7 @@ const createArticle = async (req, res) => {
   returning *`;
   const values = [user_id, title, article];
   try {
-    const { rows } = await db.query(createArticleQuery, values);
+    const { rows } = await pool.query(createArticleQuery, values);
     const dbResponse = rows[0];
     successMessage.data = dbResponse;
     return res.status(status.created).send(successMessage);
@@ -80,7 +80,7 @@ const createGifPost = async (req, res) => {
         return res.status(status.bad).send(errorMessage);
       }
       try {
-        const { rows } = await db.query(createGifQuery, values);
+        const { rows } = await pool.query(createGifQuery, values);
         const dbResponse = rows[0];
         successMessage.data = dbResponse;
         return res.status(status.created).send(successMessage);
@@ -108,7 +108,7 @@ const getAllPosts = async (req, res) => {
   const getAllArticlesQuery = `SELECT * FROM posts ORDER BY createdat DESC `;
 
   try {
-    const { rows } = await db.query(getAllArticlesQuery);
+    const { rows } = await pool.query(getAllArticlesQuery);
     const dbResponse = rows;
     if (dbResponse[0] === undefined) {
       errorMessage.message = "No articles available";
@@ -134,7 +134,7 @@ const getOnePost = async (req, res) => {
 
   const findOnePostQuery = `SELECT * FROM posts WHERE id=$1`;
   try {
-    const { rows } = await db.query(findOnePostQuery, [id]);
+    const { rows } = await pool.query(findOnePostQuery, [id]);
     const dbResponse = rows;
     if (dbResponse[0] === undefined) {
       errorMessage.error = "No article available";
@@ -172,7 +172,7 @@ const updatePost = async (req, res) => {
   });
 
   try {
-    const { rows } = await db.query(findPostQuery, [id]);
+    const { rows } = await pool.query(findPostQuery, [id]);
     const dbResponse = rows[0];
 
     if (!dbResponse) {
@@ -187,7 +187,7 @@ const updatePost = async (req, res) => {
     const articlevalues = [title, article, is_flagged, id];
 
     if (article) {
-      const response = await db.query(updateArticle, articlevalues);
+      const response = await pool.query(updateArticle, articlevalues);
       const dbResult = response.rows[0];
       successMessage.data = dbResult;
       return res.status(status.success).send(successMessage);
@@ -206,7 +206,7 @@ const updatePost = async (req, res) => {
           }
 
           try {
-            const response = await db.query(updateGifQuery, gifvalues);
+            const response = await pool.query(updateGifQuery, gifvalues);
             console.log("got here 3", response);
             const dbResponse = response.rows[0];
             successMessage.data = dbResponse;
@@ -242,7 +242,7 @@ const deletePost = async (req, res) => {
   const deleteArticleQuery = `DELETE FROM posts WHERE id=$1 AND user_id = $2 returning *`;
   try {
     const values = [id, user_id];
-    const { rows } = await db.query(deleteArticleQuery, values);
+    const { rows } = await pool.query(deleteArticleQuery, values);
     const dbResponse = rows[0];
     if (!dbResponse) {
       errorMessage.error = "No article found";

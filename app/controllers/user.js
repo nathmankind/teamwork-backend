@@ -103,6 +103,7 @@ const createUser = async (req, res) => {
       errorMessage.error = "User with that EMAIL already exist";
       return res.status(status.conflict).send(errorMessage);
     }
+    console.log(error);
     errorMessage.error = "Operation was not successful";
     return res.status(status.error).send(errorMessage);
   }
@@ -129,7 +130,7 @@ const signinUser = async (req, res) => {
   }
   const signinUserQuery = "SELECT * FROM users WHERE email = $1";
   try {
-    const { rows } = await db.query(signinUserQuery, [email]);
+    const { rows } = await pool.query(signinUserQuery, [email]);
     const dbResponse = rows[0];
 
     // check if user exists
@@ -155,6 +156,7 @@ const signinUser = async (req, res) => {
     successMessage.data.token = token;
     return res.status(status.success).send(successMessage);
   } catch (error) {
+    console.log(error);
     errorMessage.error = "Operation was not successful";
     return res.status(status.error).send(errorMessage);
   }
@@ -184,6 +186,7 @@ const getAllUsers = async (req, res) => {
     return res.status(status.success).send(successMessage);
   } catch (error) {
     errorMessage.message = "An error Occured";
+    console.log(error);
     return res.status(status.error).send(errorMessage);
   }
 };
